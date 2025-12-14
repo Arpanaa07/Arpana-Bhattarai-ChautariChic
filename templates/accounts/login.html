@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Login | ChautariChic{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <!-- Left Side - Branding -->
+    <div class="auth-left">
+        <div class="auth-header">
+            <a href="{{ url_for('index') }}" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                Chautari<span>Chic</span>
+            </a>
+        </div>
+        
+        <div class="welcome-content">
+            <h1>Welcome Back to Premium Salon Experiences</h1>
+            <p>Sign in to book appointments, manage your salon, or access the admin dashboard.</p>
+            
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h3>Secure Login</h3>
+                        <p>Bank-level security for your account</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h3>Quick Access</h3>
+                        <p>Instant access to all features</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div>
+                        <h3>Mobile Friendly</h3>
+                        <p>Access from any device</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Side - Login Form -->
+    <div class="auth-right">
+        <div class="auth-content">
+            <a href="{{ url_for('index') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+            
+            <div class="auth-form-header">
+                <h1>Sign In to Your Account</h1>
+                <p>Select your role and enter your credentials</p>
+            </div>
+            
+            <!-- Role Selection -->
+            <div class="role-selector">
+                <button type="button" class="role-option active" data-role="customer">
+                    <div class="role-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="role-label">Customer</div>
+                </button>
+                <button type="button" class="role-option" data-role="salon">
+                    <div class="role-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="role-label">Salon Owner</div>
+                </button>
+                <button type="button" class="role-option" data-role="admin">
+                    <div class="role-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="role-label">Admin</div>
+                </button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" method="POST" action="{{ url_for('login') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" id="role" name="role" value="customer">
+                
+                <div class="form-group">
+                    <label for="email" class="form-label required">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                    <div class="form-text" id="email-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label required">Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                        <button type="button" id="togglePassword" class="btn btn-outline" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); padding: 5px;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="form-text" id="password-error"></div>
+                </div>
+                
+                <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="form-check">
+                        <input type="checkbox" id="remember" name="remember" class="form-check-input">
+                        <label for="remember" class="form-check-label">Remember me</label>
+                    </div>
+                    <a href="{{ url_for('forgot_password') }}" class="auth-link">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            
+            <!-- Social Login -->
+            <div class="social-divider">Or continue with</div>
+            
+            <div class="social-buttons">
+                <button type="button" class="social-btn social-btn-google" id="googleLogin">
+                    <i class="fab fa-google"></i> Google
+                </button>
+                <button type="button" class="social-btn social-btn-facebook" id="facebookLogin">
+                    <i class="fab fa-facebook"></i> Facebook
+                </button>
+            </div>
+            
+            <!-- Register Link -->
+            <div class="auth-form-footer">
+                <span>Don't have an account?</span>
+                <a href="{{ url_for('register') }}" class="auth-link">Sign up now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('loginForm');
+        const roleOptions = document.querySelectorAll('.role-option');
+        const roleInput = document.getElementById('role');
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const emailInput = document.getElementById('email');
+        
+        // Role selection
+        roleOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                roleOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                roleInput.value = this.dataset.role;
+            });
+        });
+        
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+        
+        // Form validation
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Clear previous errors
+            clearErrors();
+            
+            // Validate email
+            if (!emailInput.value.trim()) {
+                showError('email', 'Email is required');
+                return;
+            }
+            
+            if (!isValidEmail(emailInput.value)) {
+                showError('email', 'Please enter a valid email address');
+                return;
+            }
+            
+            // Validate password
+            if (!passwordInput.value.trim()) {
+                showError('password', 'Password is required');
+                return;
+            }
+            
+            // Show loading
+            showLoading();
+            
+            try {
+                // Prepare form data
+                const formData = new FormData(this);
+                
+                // Send AJAX request
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': CSRF_TOKEN
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Successful login
+                    showFlash('success', data.message || 'Login successful!');
+                    
+                    // Redirect after delay
+                    setTimeout(() => {
+                        window.location.href = data.redirect || BASE_URL;
+                    }, 1500);
+                } else {
+                    // Show error
+                    showFlash('error', data.error || 'Login failed');
+                    
+                    // Show field errors if any
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            showError(field, data.errors[field]);
+                        });
+                    }
+                }
+            } catch (error) {
+                showFlash('error', 'Network error. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        // Social login buttons
+        document.getElementById('googleLogin').addEventListener('click', function() {
+            showFlash('info', 'Google login integration coming soon!');
+            // Implement Google OAuth here
+        });
+        
+        document.getElementById('facebookLogin').addEventListener('click', function() {
+            showFlash('info', 'Facebook login integration coming soon!');
+            // Implement Facebook OAuth here
+        });
+        
+        // Helper functions
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function showError(field, message) {
+            const errorElement = document.getElementById(`${field}-error`);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.className = 'form-text error';
+                const input = document.getElementById(field);
+                if (input) input.classList.add('error');
+            }
+        }
+        
+        function clearErrors() {
+            document.querySelectorAll('.form-text').forEach(el => {
+                el.textContent = '';
+                el.className = 'form-text';
+            });
+            document.querySelectorAll('.form-control').forEach(el => {
+                el.classList.remove('error', 'success');
+            });
+        }
+        
+        function showLoading() {
+            document.getElementById('loading-overlay').classList.add('active');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.remove('active');
+        }
+        
+        function showFlash(type, message) {
+            // This would be handled by your backend flash messages
+            // For frontend-only, you can create a flash message element
+            const flashContainer = document.querySelector('.flash-messages') || createFlashContainer();
+            const flash = document.createElement('div');
+            flash.className = `flash-message flash-${type}`;
+            flash.innerHTML = `
+                <span>${message}</span>
+                <button class="flash-close">&times;</button>
+            `;
+            flashContainer.appendChild(flash);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                flash.remove();
+            }, 5000);
+            
+            // Close button
+            flash.querySelector('.flash-close').addEventListener('click', () => {
+                flash.remove();
+            });
+        }
+        
+        function createFlashContainer() {
+            const container = document.createElement('div');
+            container.className = 'flash-messages';
+            document.body.appendChild(container);
+            return container;
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

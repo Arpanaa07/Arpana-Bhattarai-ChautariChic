@@ -1,0 +1,542 @@
+/**
+ * ChautariChic Authentication JavaScript
+ * Common authentication functions and utilities
+ */
+
+// Global variables
+let currentUser = null;
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeAuth();
+});
+
+/**
+ * Initialize authentication features
+ */
+function initializeAuth() {
+    // Initialize flash messages
+    initializeFlashMessages();
+    
+    // Initialize form validations
+    initializeFormValidations();
+    
+    // Initialize password visibility toggles
+    initializePasswordToggles();
+    
+    // Check if user is logged in
+    checkAuthStatus();
+    
+    // Initialize CSRF token for AJAX requests
+    initializeCSRF();
+}
+
+/**
+ * Initialize flash message functionality
+ */
+function initializeFlashMessages() {
+    // Close flash messages when clicked
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('flash-close')) {
+            e.target.closest('.flash-message').remove();
+        }
+    });
+    
+    // Auto-remove flash messages after 5 seconds
+    const flashMessages = document.querySelectorAll('.flash-message');
+    flashMessages.forEach(flash => {
+        setTimeout(() => {
+            if (flash.parentNode) {
+                flash.remove();
+            }
+        }, 5000);
+    });
+}
+
+/**
+ * Initialize form validation
+ */
+function initializeFormValidations() {
+    // Email validation
+    document.querySelectorAll('input[type="email"]').forEach(input => {
+        input.addEventListener('blur', function() {
+            validateEmail(this);
+        });
+    });
+    
+    // Phone validation (Nepali format)
+    document.querySelectorAll('input[type="tel"]').forEach(input => {
+        input.addEventListener('blur', function() {
+            validatePhone(this);
+        });
+    });
+    
+    // Real-time password strength checking
+    document.querySelectorAll('input[type="password"]').forEach(input => {
+        if (input.id === 'password' || input.name === 'password') {
+            input.addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
+        }
+    });
+}
+
+/**
+ * Initialize password visibility toggles
+ */
+function initializePasswordToggles() {
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('[data-toggle-password]')) {
+            const button = e.target.closest('[data-toggle-password]');
+            const targetId = button.getAttribute('data-toggle-password');
+            const passwordInput = document.getElementById(targetId);
+            
+            if (passwordInput) {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Update icon
+                const icon = button.querySelector('i');
+                if (icon) {
+                    icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Check user authentication status
+ */
+function checkAuthStatus() {
+    const token = getCookie('auth_token');
+    const userData = localStorage.getItem('user_data');
+    
+    if (token && userData) {
+        try {
+            currentUser = JSON.parse(userData);
+            updateUIForAuthState(true);
+        } catch (e) {
+            console.error('Error parsing user data:', e);
+            clearAuthData();
+        }
+    } else {
+        updateUIForAuthState(false);
+    }
+}
+
+/**
+ * Update UI based on authentication state
+ */
+function updateUIForAuthState(isLoggedIn) {
+    // Update navigation
+    const authLinks = document.querySelectorAll('[data-auth-only]');
+    const guestLinks = document.querySelectorAll('[data-guest-only]');
+    
+    if (isLoggedIn) {
+        authLinks.forEach(link => link.style.display = 'block');
+        guestLinks.forEach(link => link.style.display = 'none');
+        
+        // Update user info if elements exist
+        const userElements = document.querySelectorAll('[data-user-info]');
+        userElements.forEach(element => {
+            const field = element.getAttribute('data-user-info');
+            if (currentUser && currentUser[field]) {
+                element.textContent = currentUser[field];
+            }
+        });
+    } else {
+        authLinks.forEach(link => link.style.display = 'none');
+        guestLinks.forEach(link => link.style.display = 'block');
+    }
+}
+
+/**
+ * Initialize CSRF token for AJAX requests
+ */
+function initializeCSRF() {
+    // Add CSRF token to all AJAX requests
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) {
+        window.CSRF_TOKEN = csrfToken.getAttribute('content');
+        
+        // Override fetch to include CSRF token
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options = {}) {
+            if (options.method && options.method.toUpperCase() !== 'GET') {
+                options.headers = options.headers || {};
+                options.headers['X-CSRFToken'] = window.CSRF_TOKEN;
+            }
+            return originalFetch.call(this, url, options);
+        };
+    }
+}
+
+/**
+ * Show loading overlay
+ */
+function showLoading() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.classList.add('active');
+    }
+}
+
+/**
+ * Hide loading overlay
+ */
+function hideLoading() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+}
+
+/**
+ * Show a flash message
+ */
+function showFlash(type, message, duration = 5000) {
+    const container = document.querySelector('.flash-messages') || createFlashContainer();
+    
+    const flash = document.createElement('div');
+    flash.className = `flash-message flash-${type}`;
+    flash.innerHTML = `
+        <span>${message}</span>
+        <button class="flash-close">&times;</button>
+    `;
+    
+    container.appendChild(flash);
+    
+    // Auto remove after duration
+    setTimeout(() => {
+        if (flash.parentNode) {
+            flash.remove();
+        }
+    }, duration);
+    
+    // Close on click
+    flash.querySelector('.flash-close').addEventListener('click', () => {
+        flash.remove();
+    });
+}
+
+/**
+ * Create flash message container if it doesn't exist
+ */
+function createFlashContainer() {
+    const container = document.createElement('div');
+    container.className = 'flash-messages';
+    document.body.appendChild(container);
+    return container;
+}
+
+/**
+ * Validate email address
+ */
+function validateEmail(input) {
+    const value = input.value.trim();
+    const errorElement = input.nextElementSibling || input.parentNode.querySelector('.form-text');
+    
+    if (!value) {
+        return false;
+    }
+    
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    
+    if (errorElement) {
+        if (!isValid) {
+            errorElement.textContent = 'Please enter a valid email address';
+            errorElement.className = 'form-text error';
+            input.classList.add('error');
+        } else {
+            errorElement.textContent = '';
+            errorElement.className = 'form-text';
+            input.classList.remove('error');
+        }
+    }
+    
+    return isValid;
+}
+
+/**
+ * Validate phone number (Nepali format)
+ */
+function validatePhone(input) {
+    const value = input.value.replace(/\D/g, '');
+    const errorElement = input.nextElementSibling || input.parentNode.querySelector('.form-text');
+    
+    if (!value) {
+        return false;
+    }
+    
+    const isValid = /^9[0-9]{9}$/.test(value);
+    
+    if (errorElement) {
+        if (!isValid) {
+            errorElement.textContent = 'Please enter a valid Nepali phone number (98XXXXXXXX)';
+            errorElement.className = 'form-text error';
+            input.classList.add('error');
+        } else {
+            errorElement.textContent = '';
+            errorElement.className = 'form-text';
+            input.classList.remove('error');
+        }
+    }
+    
+    return isValid;
+}
+
+/**
+ * Check password strength
+ */
+function checkPasswordStrength(password) {
+    const meter = document.getElementById('password-strength-meter');
+    if (!meter) return;
+    
+    let strength = 0;
+    
+    // Length check
+    if (password.length >= 8) strength++;
+    
+    // Lowercase check
+    if (/[a-z]/.test(password)) strength++;
+    
+    // Uppercase check
+    if (/[A-Z]/.test(password)) strength++;
+    
+    // Number check
+    if (/\d/.test(password)) strength++;
+    
+    // Special character check
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    
+    // Update meter
+    meter.className = 'password-strength-meter';
+    meter.style.width = '0%';
+    
+    if (password.length === 0) {
+        return;
+    }
+    
+    let width = 0;
+    let className = '';
+    
+    if (strength <= 2) {
+        width = 33;
+        className = 'strength-weak';
+    } else if (strength === 3) {
+        width = 66;
+        className = 'strength-medium';
+    } else if (strength >= 4) {
+        width = 100;
+        className = 'strength-strong';
+    }
+    
+    meter.style.width = width + '%';
+    meter.classList.add(className);
+    
+    return strength;
+}
+
+/**
+ * Get cookie value by name
+ */
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+/**
+ * Set cookie
+ */
+function setCookie(name, value, days = 7) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}; path=/; Secure; SameSite=Strict`;
+}
+
+/**
+ * Clear authentication data
+ */
+function clearAuthData() {
+    // Clear cookies
+    document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    
+    // Clear localStorage
+    localStorage.removeItem('user_data');
+    localStorage.removeItem('auth_token');
+    
+    // Clear sessionStorage
+    sessionStorage.clear();
+    
+    // Update UI
+    currentUser = null;
+    updateUIForAuthState(false);
+}
+
+/**
+ * Logout function
+ */
+async function logout() {
+    showLoading();
+    
+    try {
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': window.CSRF_TOKEN
+            }
+        });
+        
+        if (response.ok) {
+            clearAuthData();
+            showFlash('success', 'Logged out successfully');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1500);
+        } else {
+            showFlash('error', 'Logout failed. Please try again.');
+        }
+    } catch (error) {
+        showFlash('error', 'Network error. Please try again.');
+    } finally {
+        hideLoading();
+    }
+}
+
+/**
+ * Handle login
+ */
+async function handleLogin(formData) {
+    showLoading();
+    
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': window.CSRF_TOKEN
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Store auth data
+            if (data.token) {
+                setCookie('auth_token', data.token);
+                localStorage.setItem('auth_token', data.token);
+            }
+            
+            if (data.user) {
+                localStorage.setItem('user_data', JSON.stringify(data.user));
+                currentUser = data.user;
+            }
+            
+            showFlash('success', data.message || 'Login successful!');
+            updateUIForAuthState(true);
+            
+            // Redirect
+            setTimeout(() => {
+                window.location.href = data.redirect || '/dashboard';
+            }, 1500);
+        } else {
+            showFlash('error', data.error || 'Login failed');
+            return data;
+        }
+    } catch (error) {
+        showFlash('error', 'Network error. Please try again.');
+        return { error: 'Network error' };
+    } finally {
+        hideLoading();
+    }
+}
+
+/**
+ * Handle registration
+ */
+async function handleRegistration(formData) {
+    showLoading();
+    
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': window.CSRF_TOKEN
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showFlash('success', data.message || 'Registration successful!');
+            return data;
+        } else {
+            showFlash('error', data.error || 'Registration failed');
+            return data;
+        }
+    } catch (error) {
+        showFlash('error', 'Network error. Please try again.');
+        return { error: 'Network error' };
+    } finally {
+        hideLoading();
+    }
+}
+
+/**
+ * Check if user is authenticated
+ */
+function isAuthenticated() {
+    return !!currentUser;
+}
+
+/**
+ * Check if user has specific role
+ */
+function hasRole(role) {
+    return currentUser && currentUser.role === role;
+}
+
+/**
+ * Get current user data
+ */
+function getCurrentUser() {
+    return currentUser;
+}
+
+/**
+ * Require authentication for protected routes
+ */
+function requireAuth(role = null) {
+    if (!isAuthenticated()) {
+        window.location.href = '/login';
+        return false;
+    }
+    
+    if (role && !hasRole(role)) {
+        window.location.href = '/unauthorized';
+        return false;
+    }
+    
+    return true;
+}
+
+// Export functions for use in other modules
+window.auth = {
+    login: handleLogin,
+    register: handleRegistration,
+    logout: logout,
+    isAuthenticated: isAuthenticated,
+    hasRole: hasRole,
+    getUser: getCurrentUser,
+    requireAuth: requireAuth,
+    showFlash: showFlash,
+    showLoading: showLoading,
+    hideLoading: hideLoading
+}; 
