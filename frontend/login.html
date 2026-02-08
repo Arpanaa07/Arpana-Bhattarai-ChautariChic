@@ -1,0 +1,90 @@
+{% extends "salon/base.html" %}
+
+{% block content %}
+<div
+    style="display: flex; min-height: calc(100vh - 80px); align-items: center; justify-content: center; padding: 2rem;">
+    <div
+        style="width: 100%; max-width: 1000px; background: white; border-radius: 30px; box-shadow: var(--shadow-lg); display: flex; overflow: hidden; min-height: 600px;">
+        <!-- Left Side: Branding -->
+        <div
+            style="flex: 1; background: var(--primary-gradient); color: white; padding: 4rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <a href="{% url 'home' %}" class="logo"
+                    style="color: white; margin-bottom: 3rem; display: inline-flex;">
+                    <i class="fas fa-spa"></i>
+                    <span>ChautariChic</span>
+                </a>
+                <h1 style="font-family: var(--font-heading); font-size: 3rem; line-height: 1.2; margin-bottom: 2rem;">
+                    Welcome Back to <br> Premium Salon <br> Experiences</h1>
+                <p style="font-size: 1.1rem; opacity: 0.9;">Stay updated with your favorites and book your next
+                    appointment in seconds.</p>
+            </div>
+            <div>
+                <p style="margin-bottom: 1.5rem;">New here? Don't have a business yet?</p>
+                <a href="{% url 'register' %}" class="btn"
+                    style="background: rgba(255,255,255,0.2); border: 2px solid white; color: white;">List Your
+                    Salon</a>
+            </div>
+        </div>
+
+        <!-- Right Side: Form -->
+        <div style="flex: 1.2; padding: 4rem; background: white;">
+            <div style="max-width: 400px; margin: 0 auto;">
+                <h2 style="font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 0.5rem;">Sign In</h2>
+                <p style="color: var(--gray); margin-bottom: 3rem;">Stay in touch with your favorite stylists.</p>
+
+                <form method="POST" action="{% url 'login_page' %}">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Email
+                            Address</label>
+                        <input type="email" name="email" placeholder="you@example.com" required
+                            style="width: 100%; padding: 1rem; border: 2px solid var(--gray-light); border-radius: 12px; font-family: inherit;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">Password</label>
+                        <input type="password" name="password" placeholder="Enter your password" required
+                            style="width: 100%; padding: 1rem; border: 2px solid var(--gray-light); border-radius: 12px; font-family: inherit;">
+                    </div>
+
+                    <div style="text-align: right; margin-bottom: 2.5rem;">
+                        <a href="#"
+                            style="color: var(--primary); font-size: 0.9rem; text-decoration: none; font-weight: 500;">Forgot
+                            Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; padding: 1rem; justify-content: center; font-size: 1.1rem;">Sign In</button>
+                </form>
+
+                <div style="margin-top: 3rem; text-align: center;">
+                    <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1.5rem; position: relative;">
+                        <span style="background: white; padding: 0 1rem; position: relative; z-index: 1;">Or sign in
+                            with</span>
+                        <span
+                            style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--gray-light); z-index: 0;"></span>
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="#"
+                            style="width: 50px; height: 50px; border: 1px solid var(--gray-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--dark); text-decoration: none;"><i
+                                class="fab fa-google"></i></a>
+                        <a href="#"
+                            style="width: 50px; height: 50px; border: 1px solid var(--gray-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--dark); text-decoration: none;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#"
+                            style="width: 50px; height: 50px; border: 1px solid var(--gray-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--dark); text-decoration: none;"><i
+                                class="fab fa-apple"></i></a>
+                    </div>
+                </div>
+
+                <p style="margin-top: 3rem; text-align: center; color: var(--gray); font-size: 0.9rem;">
+                    Don't have an account? <a href="{% url 'register' %}"
+                        style="color: var(--primary); font-weight: 700; text-decoration: none;">Create Account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

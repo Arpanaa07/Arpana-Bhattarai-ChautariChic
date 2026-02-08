@@ -1,0 +1,137 @@
+{% extends "salon/base.html" %}
+
+{% block content %}
+<div
+    style="display: flex; min-height: calc(100vh - 80px); align-items: center; justify-content: center; padding: 2rem;">
+    <div
+        style="width: 100%; max-width: 1000px; background: white; border-radius: 30px; box-shadow: var(--shadow-lg); display: flex; overflow: hidden; min-height: 700px;">
+        <!-- Left Side: Benefits -->
+        <div
+            style="flex: 1; background: var(--primary-gradient); color: white; padding: 4rem; display: flex; flex-direction: column; justify-content: center;">
+            <a href="{% url 'home' %}" class="logo" style="color: white; margin-bottom: 3rem; display: inline-flex;">
+                <i class="fas fa-spa"></i>
+                <span>ChautariChic</span>
+            </a>
+            <h1 style="font-family: var(--font-heading); font-size: 2.5rem; line-height: 1.2; margin-bottom: 2rem;">Join
+                Our Beauty <br> Community</h1>
+
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div
+                        style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-check"></i></div>
+                    <div>
+                        <h4 style="margin-bottom: 0.2rem;">Expert styling</h4>
+                        <p style="font-size: 0.9rem; opacity: 0.8;">Get access to the best stylists in the city.</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div
+                        style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-check"></i></div>
+                    <div>
+                        <h4 style="margin-bottom: 0.2rem;">Trust & Safety</h4>
+                        <p style="font-size: 0.9rem; opacity: 0.8;">Verified reviews and secure booking payments.</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div
+                        style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-check"></i></div>
+                    <div>
+                        <h4 style="margin-bottom: 0.2rem;">Flexible Plans</h4>
+                        <p style="font-size: 0.9rem; opacity: 0.8;">Register as a salon to grow your business.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Registration Form -->
+        <div style="flex: 1.5; padding: 4rem; background: white; overflow-y: auto;">
+            <div style="max-width: 500px; margin: 0 auto;">
+                <h2 style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 0.5rem;">Create Account
+                </h2>
+                <p style="color: var(--gray); margin-bottom: 2rem;">Let's get you started with ChautariChic.</p>
+
+                {% if form.errors %}
+                <div
+                    style="background: #FEE; color: #C00; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; font-size: 0.9rem;">
+                    Please fix the errors below.
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <h4
+                        style="margin-bottom: 1.5rem; color: var(--dark); border-left: 4px solid var(--primary); padding-left: 10px;">
+                        Personal Information</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <label
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">First
+                                Name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Last
+                                Name</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Phone
+                            Number</label>
+                        {{ form.phone_number }}
+                    </div>
+
+                    <h4
+                        style="margin-bottom: 1.5rem; color: var(--dark); border-left: 4px solid var(--secondary); padding-left: 10px; margin-top: 2rem;">
+                        Account Information</h4>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Email
+                            Address</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Register
+                            As</label>
+                        {{ form.user_type }}
+                        <small style="color: var(--gray); font-size: 0.75rem;">Choose 'Salon Owner' to list your
+                            business.</small>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                        <div>
+                            <label
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Password</label>
+                            {{ form.password }}
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Confirm</label>
+                            {{ form.password_confirm }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; padding: 1.2rem; justify-content: center; font-size: 1.1rem; margin-top: 1rem;">Create
+                        Account</button>
+
+                    <p style="margin-top: 2rem; text-align: center; color: var(--gray); font-size: 0.9rem;">
+                        Already have an account? <a href="{% url 'login_page' %}"
+                            style="color: var(--primary); font-weight: 700; text-decoration: none;">Sign In</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

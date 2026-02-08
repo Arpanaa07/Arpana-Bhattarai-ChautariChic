@@ -1,0 +1,91 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Service | ChautariChic{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 3rem auto;">
+    <div style="background: white; border-radius: 30px; box-shadow: var(--shadow-lg); overflow: hidden; display: flex;">
+        <!-- Left: Design Accent -->
+        <div
+            style="flex: 1; background: var(--primary-gradient); padding: 3rem; color: white; display: flex; flex-direction: column; justify-content: center;">
+            <h1 style="font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 1.5rem;">Service Details</h1>
+            <p style="opacity: 0.9; line-height: 1.6;">Highlight your best work. Accurate pricing and duration help
+                customers book with confidence.</p>
+        </div>
+
+        <!-- Right: Form -->
+        <div style="flex: 1.5; padding: 3rem;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Service
+                            Name</label>
+                        {{ form.name }}
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Category</label>
+                        {{ form.category }}
+                        {% if not form.category.field.queryset.exists %}
+                        <div
+                            style="margin-top: 10px; padding: 12px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                            <p style="font-size: 0.75rem; color: #d97706; margin: 0; line-height: 1.4;">
+                                <i class="fas fa-exclamation-triangle" style="margin-right: 5px;"></i>
+                                No categories found. You must <a href="{% url 'salon:category_create' %}"
+                                    style="color: var(--primary); font-weight: 700; text-decoration: underline;">create
+                                    a category</a> first.
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Price
+                            (Rs.)</label>
+                        {{ form.price }}
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Duration
+                            (Mins)</label>
+                        {{ form.duration }}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Service
+                        Image</label>
+                    <div
+                        style="padding: 10px; border: 2px dashed var(--gray-light); border-radius: 12px; text-align: center;">
+                        {{ form.image }}
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2.5rem;">
+                    {{ form.is_active }}
+                    <label style="font-weight: 600; font-size: 0.9rem;">Show this service to customers</label>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">Save
+                        Service</button>
+                    <a href="{% url 'salon:service_list' %}" class="btn btn-outline"
+                        style="flex: 1; justify-content: center;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

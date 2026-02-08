@@ -1,0 +1,105 @@
+{% extends "salon/base.html" %}
+
+
+{% block extra_css %}
+<style>
+    /* Remove footer margin on home page to connect with CTA */
+    footer {
+        margin-top: 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero"
+    style="padding: 4rem 5%; text-align: center; overflow: hidden; max-width: 1000px; margin: 0 auto;">
+    <div>
+        <h1
+            style="font-family: var(--font-heading); font-size: 3.5rem; line-height: 1.1; margin-bottom: 1.5rem; color: var(--dark);">
+            Premium Beauty Services <br> <span
+                style="background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">In
+                The Comfort</span> <br> Of Your Home
+        </h1>
+        <p
+            style="font-size: 1.15rem; color: var(--gray); margin-bottom: 2.5rem; max-width: 600px; margin-inline: auto;">
+            Book top-rated stylists and beauticians to come to you. Enjoy luxury salon services without stepping out of
+            your door.
+        </p>
+        <div style="display: flex; gap: 1.5rem; justify-content: center;">
+            <a href="{% url 'salon:public_salon_list' %}" class="btn btn-primary"
+                style="padding: 12px 30px; font-size: 1.1rem;">Book Home Service</a>
+            <a href="{% url 'register' %}" class="btn btn-outline" style="padding: 12px 30px; font-size: 1.1rem;">List
+                Your Services</a>
+        </div>
+        <div style="margin-top: 3rem; display: flex; align-items: center; justify-content: center; gap: 15px;">
+            <div
+                style="display: flex; -webkit-mask-image: linear-gradient(to right, black 80%, transparent); mask-image: linear-gradient(to right, black 80%, transparent);">
+                <img src="https://i.pravatar.cc/40?u=1"
+                    style="border: 2px solid white; border-radius: 50%; margin-right: -10px;">
+                <img src="https://i.pravatar.cc/40?u=2"
+                    style="border: 2px solid white; border-radius: 50%; margin-right: -10px;">
+                <img src="https://i.pravatar.cc/40?u=3" style="border: 2px solid white; border-radius: 50%;">
+            </div>
+            <p style="font-size: 0.9rem; color: var(--gray);"><span
+                    style="color: var(--primary); font-weight: 700;">500+</span> home services delivered</p>
+        </div>
+    </div>
+</section>
+
+<section id="features" style="padding: 6rem 5%; background: white;">
+    <div style="text-align: center; margin-bottom: 4rem;">
+        <h2 style="font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 1rem;">Why Choose ChautariChic?
+        </h2>
+        <p style="color: var(--gray);">We bring the best of Nepal's beauty industry to your living room.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <div class="card"
+            style="padding: 2.5rem; text-align: center; border: 1px solid var(--gray-light); box-shadow: none; transition: var(--transition); border-radius: 20px;">
+            <div
+                style="width: 60px; height: 60px; background: #FDF2F8; color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.5rem;">
+                <i class="fas fa-home"></i>
+            </div>
+            <h3 style="margin-bottom: 1rem;">Salon at Home</h3>
+            <p style="color: var(--gray); font-size: 0.95rem;">Professional beauty services delivered right to your
+                doorstep.</p>
+        </div>
+        <div class="card"
+            style="padding: 2.5rem; text-align: center; border: 1px solid var(--gray-light); box-shadow: none; transition: var(--transition); border-radius: 20px;">
+            <div
+                style="width: 60px; height: 60px; background: #EEF2FF; color: var(--secondary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.5rem;">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3 style="margin-bottom: 1rem;">Flexible Scheduling</h3>
+            <p style="color: var(--gray); font-size: 0.95rem;">Book appointments that fit your schedule, at your
+                convenience.</p>
+        </div>
+        <div class="card"
+            style="padding: 2.5rem; text-align: center; border: 1px solid var(--gray-light); box-shadow: none; transition: var(--transition); border-radius: 20px;">
+            <div
+                style="width: 60px; height: 60px; background: #ECFDF5; color: #10B981; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.5rem;">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 style="margin-bottom: 1rem;">Safe & Hygienic</h3>
+            <p style="color: var(--gray); font-size: 0.95rem;">Verified professionals following strict hygiene
+                protocols.</p>
+        </div>
+    </div>
+</section>
+
+<section id="cta"
+    style="padding: 4rem 2rem; background: var(--primary-gradient); text-align: center; color: var(--white);">
+    <h2 style="font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 1rem;">Ready for a <br>
+        Salon Day at Home?</h2>
+    <p style="font-size: 1.15rem; opacity: 0.9; margin-bottom: 2rem; max-width: 600px; margin-inline: auto;">
+        Join thousands of happy customers and bring the luxury of a salon to your personal space.
+    </p>
+    <div style="display: flex; gap: 1.5rem; justify-content: center;">
+        <a href="{% url 'register' %}" class="btn"
+            style="background: var(--white); color: var(--primary); padding: 10px 24px; font-size: 1rem;">Join as a
+            Customer</a>
+        <a href="{% url 'register' %}" class="btn"
+            style="border: 2px solid white; color: white; padding: 10px 24px; font-size: 1rem;">Register Your
+            Salon</a>
+    </div>
+</section>
+{% endblock %}

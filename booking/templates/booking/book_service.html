@@ -1,0 +1,59 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}Book Appointment | ChautariChic{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; padding: 3rem 1rem;">
+    <div
+        style="background: white; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; overflow: hidden;">
+        <div style="padding: 2rem; border-bottom: 1px solid #f1f5f9; text-align: center; background: #fdf2f8;">
+            <h1 style="font-family: var(--font-heading); margin-bottom: 0.5rem; font-size: 1.8rem; color: var(--dark);">
+                Book Appointment</h1>
+            <p style="color: #64748b; font-size: 0.95rem;">Complete your details to secure your spot.</p>
+        </div>
+
+        <div style="padding: 2rem;">
+            <form method="post">
+                {% csrf_token %}
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--dark); font-size: 0.9rem;">Service</label>
+                    {{ form.service }}
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--dark); font-size: 0.9rem;">Stylist
+                        <span style="font-weight: 400; color: #94a3b8;">(Optional)</span></label>
+                    {{ form.staff }}
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--dark); font-size: 0.9rem;">Date</label>
+                        {{ form.date }}
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--dark); font-size: 0.9rem;">Time</label>
+                        {{ form.time }}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <label
+                        style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--dark); font-size: 0.9rem;">Notes</label>
+                    {{ form.notes }}
+                </div>
+
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; padding: 12px; font-size: 1rem; border-radius: 10px;">
+                    Confirm Booking
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

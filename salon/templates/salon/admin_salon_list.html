@@ -1,0 +1,208 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}Manage Salons | Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --admin-bg: #f8fafc;
+        --admin-sidebar: #ffffff;
+        --admin-text: #1e293b;
+        --admin-muted: #64748b;
+        --admin-primary: #E6007E;
+    }
+
+    body {
+        background: var(--admin-bg);
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: calc(100vh - 80px);
+        /* Approx navbar height */
+    }
+
+    .sidebar {
+        width: 260px;
+        background: var(--admin-sidebar);
+        border-right: 1px solid #e2e8f0;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 80px;
+        height: calc(100vh - 80px);
+        flex-shrink: 0;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-x: hidden;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: var(--admin-muted);
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link.active {
+        background: #fdf2f8;
+        color: var(--admin-primary);
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-table th {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.75rem;
+        color: var(--admin-muted);
+        text-transform: uppercase;
+        font-weight: 600;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .admin-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background: #fff7ed;
+        color: #c2410c;
+        border: 1px solid #ffedd5;
+    }
+
+    .status-active {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #d1fae5;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav>
+            <a href="{% url 'salon:superadmin_dashboard' %}" class="sidebar-link"><i class="fas fa-columns"
+                    style="width: 20px;"></i> Dashboard</a>
+            <a href="{% url 'salon:admin_salon_list' %}" class="sidebar-link active"><i class="fas fa-store"
+                    style="width: 20px;"></i> Salons</a>
+            <a href="{% url 'salon:admin_user_list' %}" class="sidebar-link"><i class="fas fa-users"
+                    style="width: 20px;"></i> Users</a>
+            <a href="#" class="sidebar-link"><i class="fas fa-cog" style="width: 20px;"></i> Settings</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-family: var(--font-heading); font-size: 1.8rem; color: var(--admin-text);">All Salons
+                </h1>
+                <p style="color: var(--admin-muted);">Manage all registered salons on the platform.</p>
+            </div>
+            <div
+                style="background: white; padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0; color: var(--admin-muted); font-size: 0.9rem;">
+                Total: <strong>{{ salons.count }}</strong>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Salon Info</th>
+                            <th>Location</th>
+                            <th>Owner Email</th>
+                            <th>Joined Date</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for salon in salons %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    {% if salon.logo %}
+                                    <img src="{{ salon.logo.url }}"
+                                        style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                                    {% else %}
+                                    <div
+                                        style="width: 40px; height: 40px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <div style="font-weight: 600; color: #1e293b;">{{ salon.name }}</div>
+                                        <div style="font-size: 0.75rem; color: #64748b;">ID: #{{ salon.pk }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ salon.location }}</td>
+                            <td>{{ salon.owner.email }}</td>
+                            <td>{{ salon.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% if not salon.is_approved %}
+                                <span class="status-badge status-pending">Pending</span>
+                                {% else %}
+                                <span class="status-badge status-active">Active</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="#" class="btn btn-outline"
+                                    style="padding: 4px 10px; font-size: 0.8rem; height: auto;">View</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="padding: 3rem; text-align: center; color: #94a3b8;">No salons found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}{{ salon.name }} | ChautariChic{% endblock %}
+
+{% block content %}
+<!-- Salon Hero Header -->
+<div style="background: white; border-bottom: 1px solid #e2e8f0; padding: 2rem 0;">
+    <div class="container" style="max-width: 1000px;">
+        <div style="display: flex; gap: 2rem; align-items: center;">
+            <div style="position: relative; width: 120px; height: 120px; flex-shrink: 0;">
+                {% if salon.logo %}
+                <img src="{{ salon.logo.url }}"
+                    style="width: 100%; height: 100%; border-radius: 30px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                {% else %}
+                <div
+                    style="width: 100%; height: 100%; border-radius: 30px; background: #fdf2f8; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 2.5rem;">
+                    <i class="fas fa-spa"></i>
+                </div>
+                {% endif %}
+
+                {% if salon.is_approved %}
+                <div
+                    style="position: absolute; bottom: -5px; right: -5px; background: #10b981; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; font-size: 0.9rem;">
+                    <i class="fas fa-check"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <div style="flex: 1;">
+                <h1
+                    style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 0.5rem; color: var(--dark);">
+                    {{ salon.name }}
+                </h1>
+                <p style="color: #64748b; font-size: 1rem; margin-bottom: 1rem; line-height: 1.5;">
+                    {{ salon.description }}
+                </p>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 0.9rem; color: #475569;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
+                        {{ salon.location }}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-clock" style="color: var(--primary);"></i>
+                        {{ salon.opening_time|time:"g:i A" }} - {{ salon.closing_time|time:"g:i A" }}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-phone" style="color: var(--primary);"></i>
+                        {{ salon.contact_number }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Services Content -->
+<div class="container" style="padding: 2.5rem 1rem; max-width: 1000px;">
+    {% for category, services in grouped_services.items %}
+    <div style="margin-bottom: 2rem;">
+        <h3
+            style="font-family: var(--font-heading); font-size: 1.4rem; color: var(--dark); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">
+            {{ category }}
+        </h3>
+
+        <div style="display: grid; gap: 1rem;">
+            {% for service in services %}
+            <div
+                style="background: white; border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid #f1f5f9; transition: transform 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    {% if service.image %}
+                    <img src="{{ service.image.url }}"
+                        style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
+                    {% else %}
+                    <div
+                        style="width: 50px; height: 50px; border-radius: 10px; background: #f8fafc; display: flex; align-items: center; justify-content: center; color: #cbd5e1;">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    {% endif %}
+
+                    <div>
+                        <h4 style="margin: 0; font-size: 1rem; color: var(--dark);">{{ service.name }}</h4>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">
+                            <span style="font-weight: 500;">{{ service.duration }} mins</span>
+                            {% if service.description %}
+                            <span style="margin: 0 4px; color: #cbd5e1;">|</span> {{
+                            service.description|truncatechars:50 }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div style="font-weight: 700; color: var(--dark); font-size: 1.1rem;">Rs. {{ service.price }}</div>
+                    <a href="{% url 'booking:book_service' salon.pk %}?service={{ service.pk }}" class="btn btn-primary"
+                        style="padding: 6px 16px; font-size: 0.85rem; border-radius: 8px;">
+                        Book
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align: center; padding: 4rem; color: #94a3b8;">
+        <i class="fas fa-clipboard-list" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+        <p>No services listed for this salon yet.</p>
+    </div>
+    {% endfor %}
+
+    <!-- Mini Team Section (Optional/Compact) -->
+    {% if staff_members %}
+    <div style="margin-top: 4rem; border-top: 1px solid #e2e8f0; padding-top: 2rem;">
+        <h3 style="font-family: var(--font-heading); font-size: 1.4rem; color: var(--dark); margin-bottom: 1.5rem;">Meet
+            the Experts</h3>
+        <div style="display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1rem;">
+            {% for staff in staff_members %}
+            <div style="text-align: center; min-width: 100px;">
+                {% if staff.photo %}
+                <img src="{{ staff.photo.url }}"
+                    style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 0.5rem; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                {% else %}
+                <div
+                    style="width: 70px; height: 70px; border-radius: 50%; background: #f1f5f9; margin: 0 auto 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                    <i class="fas fa-user"></i>
+                </div>
+                {% endif %}
+                <div style="font-weight: 600; font-size: 0.9rem; color: var(--dark);">{{ staff.name }}</div>
+                <div style="font-size: 0.75rem; color: #64748b;">{{ staff.role }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

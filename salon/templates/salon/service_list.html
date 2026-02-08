@@ -1,0 +1,74 @@
+﻿{% extends 'salon/base.html' %}
+
+{% block title %}Manage Services | ChautariChic{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 2rem auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 style="font-family: var(--font-heading);">Our Services</h1>
+            <p style="color: var(--gray);">List and manage everything you offer.</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'salon:category_list' %}" class="btn btn-outline">Manage Categories</a>
+            <a href="{% url 'salon:service_create' %}" class="btn btn-primary">+ Add New Service</a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+        {% for service in services %}
+        <div class="card"
+            style="padding: 0; overflow: hidden; position: relative; border: 1px solid var(--gray-light); box-shadow: var(--shadow-sm);">
+            {% if service.image %}
+            <img src="{{ service.image.url }}" style="width: 100%; height: 180px; object-fit: cover;">
+            {% else %}
+            <div
+                style="width: 100%; height: 180px; background: var(--gray-light); display: flex; align-items: center; justify-content: center; color: var(--gray);">
+                <i class="fas fa-magic fa-3x"></i>
+            </div>
+            {% endif %}
+
+            <div style="padding: 1.5rem;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <span class="badge badge-info" style="margin-bottom: 5px; display: inline-block;">{{ service.category.name }}</span>
+                        <h3 style="margin: 0; font-family: var(--font-heading);">{{ service.name }}</h3>
+                    </div>
+                    {% if not service.is_active %}
+                    <span class="badge badge-danger">Inactive</span>
+                    {% endif %}
+                </div>
+
+                <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.4;">{{ service.description|truncatechars:80 }}</p>
+
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--gray-light);">
+                    <div>
+                        <div style="font-weight: 700; color: var(--primary);">Rs. {{ service.price }}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray);"><i class="far fa-clock"></i> {{ service.duration }} mins</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="{% url 'salon:service_edit' service.pk %}" class="btn-outline"
+                            style="padding: 6px 10px; font-size: 12px; border-radius: 8px;">Edit</a>
+                        <form action="{% url 'salon:service_delete' service.pk %}" method="post"
+                            onsubmit="return confirm('Delete this service?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn"
+                                style="padding: 6px 10px; font-size: 12px; border-radius: 8px; background: #fee2e2; color: #991b1b;">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; background: white; padding: 4rem; text-align: center; border-radius: 20px;">
+            <i class="fas fa-concierge-bell fa-4x" style="color: var(--gray-light); margin-bottom: 1rem;"></i>
+            <h3>No services yet</h3>
+            <p style="color: var(--gray); margin-bottom: 2rem;">Add your first service to start getting bookings!</p>
+            <a href="{% url 'salon:service_create' %}" class="btn btn-primary">Add New Service</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

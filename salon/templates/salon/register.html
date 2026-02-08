@@ -1,0 +1,53 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}Register Your Salon | ChautariChic{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2 style="font-family: var(--font-heading); margin-bottom: 20px; color: var(--primary);">Join as a Service
+            Partner
+        </h2>
+        <p style="margin-bottom: 30px; color: var(--dark-light);">Expand your reach. Deliver your expert beauty services
+            directly to clients' homes.</p>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-sm btn-primary"
+                style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;">
+                <i class="fas fa-plus"></i> Register Salon
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+.form-group input, .form-group textarea, .form-group select {
+width: 100%;
+padding: 12px 16px;
+border: 2px solid var(--gray);
+border-radius: 12px;
+font-size: 15px;
+transition: var(--transition);
+font-family: var(--font-body);
+}
+
+.form-group input:focus, .form-group textarea:focus {
+outline: none;
+border-color: var(--primary);
+}
+{% endblock %}

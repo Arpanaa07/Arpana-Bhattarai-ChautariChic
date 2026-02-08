@@ -1,0 +1,60 @@
+﻿{% extends 'salon/base.html' %}
+{% block title %}My Bookings{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 900px; padding: 3rem 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 style="font-family: var(--font-heading); font-size: 2rem; color: var(--dark); margin-bottom: 0.25rem;">My Bookings</h1>
+            <p style="color: #64748b; font-size: 0.95rem;">Manage your upcoming and past appointments.</p>
+        </div>
+        <a href="{% url 'salon:public_salon_list' %}" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">
+            <i class="fas fa-plus" style="margin-right: 6px;"></i> Book New
+        </a>
+    </div>
+    {% if bookings %}
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {% for booking in bookings %}
+        <div style="background: white; border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+            {% if booking.service.image %}
+            <img src="{{ booking.service.image.url }}" alt="{{ booking.service.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; flex-shrink: 0;">
+            {% else %}
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #E6007E 0%, #7C3AED 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fas fa-cut" style="color: white; font-size: 1.5rem;"></i>
+            </div>
+            {% endif %}
+            <div style="flex: 1;">
+                <h3 style="font-size: 1.1rem; color: var(--dark); margin-bottom: 0.25rem;">{{ booking.service.name }}</h3>
+                <div style="color: #64748b; font-size: 0.9rem; display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem;">
+                    <span><i class="fas fa-store" style="color: #cbd5e1; margin-right: 4px;"></i> {{ booking.salon.name }}</span>
+                    {% if booking.staff %}
+                    <span><i class="fas fa-user" style="color: #cbd5e1; margin-right: 4px;"></i> {{ booking.staff.name }}</span>
+                    {% endif %}
+                </div>
+                <div style="color: #64748b; font-size: 0.85rem;">
+                    <i class="far fa-calendar" style="margin-right: 4px;"></i> {{ booking.date }} at {{ booking.time }}
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; padding: 6px 12px; border-radius: 99px; letter-spacing: 0.5px;
+                {% if booking.status == 'PENDING' %} background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5;
+                {% elif booking.status == 'CONFIRMED' %} background: #ecfdf5; color: #047857; border: 1px solid #d1fae5;
+                {% elif booking.status == 'CANCELLED' %} background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2;
+                {% else %} background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; {% endif %}">
+                    {{ booking.status }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 5rem 1rem; background: white; border-radius: 16px; border: 1px dashed #cbd5e1;">
+        <div style="width: 80px; height: 80px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #94a3b8;">
+            <i class="far fa-calendar-alt" style="font-size: 2.5rem;"></i>
+        </div>
+        <h3 style="font-family: var(--font-heading); color: #64748b; margin-bottom: 0.5rem;">No Bookings Yet</h3>
+        <p style="color: #94a3b8; margin-bottom: 2rem;">Discover great salons and book your first appointment.</p>
+        <a href="{% url 'salon:public_salon_list' %}" class="btn btn-primary">Browse Salons</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

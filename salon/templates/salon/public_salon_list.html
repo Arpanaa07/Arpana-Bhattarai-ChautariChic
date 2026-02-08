@@ -1,0 +1,85 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}Discover Salons | ChautariChic{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 2rem 1rem;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h1 style="font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--dark);">
+            Book Beauty <span
+                style="background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">At
+                Home</span>
+        </h1>
+        <p style="color: #64748b; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+            Browse top salons offering home services and book your appointment instantly.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+        {% for salon in salons %}
+        <a href="{% url 'salon:public_salon_detail' salon.pk %}" style="text-decoration: none; color: inherit;">
+            <div class="salon-card"
+                style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s ease; border: 1px solid #e2e8f0; height: 100%; display: flex; flex-direction: column;">
+                <div
+                    style="position: relative; height: 180px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    {% if salon.logo %}
+                    <img src="{{ salon.logo.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                    <i class="fas fa-spa" style="font-size: 3rem; color: #cbd5e1;"></i>
+                    {% endif %}
+
+                    {% if salon.is_approved %}
+                    <div
+                        style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.95); padding: 4px 10px; border-radius: 99px; font-size: 0.7rem; font-weight: 700; color: #10b981; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <i class="fas fa-check-circle"></i> VERIFIED
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div style="padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column;">
+                    <h3
+                        style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 0.4rem; color: var(--dark);">
+                        {{ salon.name }}</h3>
+                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.4; flex-grow: 1;">
+                        {{ salon.description|truncatewords:12 }}
+                    </p>
+
+                    <div
+                        style="display: flex; flex-direction: column; gap: 6px; color: #64748b; font-size: 0.85rem; margin-bottom: 1.25rem;">
+                        <span style="display: flex; align-items: center; gap: 8px;"><i class="fas fa-map-marker-alt"
+                                style="color: var(--primary); width: 14px;"></i> {{ salon.location }}</span>
+                        <span style="display: flex; align-items: center; gap: 8px;"><i class="fas fa-clock"
+                                style="color: var(--primary); width: 14px;"></i> Open Now</span>
+                    </div>
+
+                    <button
+                        style="width: 100%; padding: 10px; background: var(--light); color: var(--primary); border: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s;">
+                        View Services <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
+                    </button>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div
+            style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: white; border-radius: 16px; border: 1px dashed #cbd5e1;">
+            <div style="font-size: 3rem; color: #e2e8f0; margin-bottom: 1rem;"><i class="fas fa-search"></i></div>
+            <h3 style="color: #64748b; margin-bottom: 0.5rem;">No Salons Found</h3>
+            <p style="color: #94a3b8; font-size: 0.95rem;">Check back later for new partners.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .salon-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-color: rgba(230, 0, 126, 0.3);
+    }
+
+    .salon-card:hover button {
+        background: var(--primary);
+        color: white;
+    }
+</style>
+{% endblock %}

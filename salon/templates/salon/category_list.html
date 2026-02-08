@@ -1,0 +1,48 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}Manage Categories | ChautariChic{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 2rem auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="font-family: var(--font-heading);">Service Categories</h1>
+        <a href="{% url 'salon:category_create' %}" class="btn btn-primary">+ Add Category</a>
+    </div>
+
+    <div style="background: white; border-radius: 20px; padding: 2rem; box-shadow: var(--shadow-sm);">
+        <table class="data-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 1px solid var(--gray-light);">
+                    <th style="padding: 1rem;">Category Name</th>
+                    <th style="padding: 1rem;">Services</th>
+                    <th style="padding: 1rem; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr style="border-bottom: 1px solid var(--gray-light);">
+                    <td style="padding: 1rem; font-weight: 600;">{{ category.name }}</td>
+                    <td style="padding: 1rem;"><span class="badge badge-info">{{ category.services.count }}
+                            Services</span></td>
+                    <td style="padding: 1rem; text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                        <a href="{% url 'salon:category_edit' category.pk %}" class="btn-outline"
+                            style="padding: 6px 12px; font-size: 13px;">Edit</a>
+                        <form action="{% url 'salon:category_delete' category.pk %}" method="post"
+                            onsubmit="return confirm('Delete this category? Services linked to it will also be deleted.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn"
+                                style="padding: 6px 12px; font-size: 13px; background: #fee2e2; color: #991b1b;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="padding: 3rem; text-align: center; color: var(--gray);">No categories found.
+                        Start by adding one!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

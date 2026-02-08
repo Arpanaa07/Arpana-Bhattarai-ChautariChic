@@ -1,0 +1,56 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}Edit Salon Profile | {{ salon.name }} | ChautariChic{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2 style="font-family: var(--font-heading); margin-bottom: 20px; color: var(--primary);">Edit Salon Profile
+        </h2>
+        <p style="margin-bottom: 30px; color: var(--dark-light);">Update your salon details below.</p>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button type="submit" class="btn-sm btn-primary" style="flex: 1; padding: 15px; font-size: 16px;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                <a href="{% url 'salon:dashboard' %}" class="btn-sm"
+                    style="flex: 1; padding: 15px; font-size: 16px; background: var(--gray-light); color: var(--dark); text-align: center;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+.form-group input, .form-group textarea, .form-group select {
+width: 100%;
+padding: 12px 16px;
+border: 2px solid var(--gray);
+border-radius: 12px;
+font-size: 15px;
+transition: var(--transition);
+font-family: var(--font-body);
+}
+
+.form-group input:focus, .form-group textarea:focus {
+outline: none;
+border-color: var(--primary);
+}
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Staff | ChautariChic{% endblock %}
+
+{% block extra_css %}
+<style>
+    .days-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .form-check-input-group {
+        display: none;
+        /* Hide original checkboxes to style them */
+    }
+
+    .day-selector label {
+        display: block;
+        padding: 8px 12px;
+        background: #f1f5f9;
+        border: 1px solid var(--gray-light);
+        border-radius: 8px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .day-selector input:checked+label {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 3rem auto;">
+    <div style="background: white; border-radius: 30px; box-shadow: var(--shadow-lg); overflow: hidden; display: flex;">
+        <!-- Left: Branding -->
+        <div
+            style="flex: 1; background: var(--primary-gradient); padding: 3rem; color: white; display: flex; flex-direction: column; justify-content: center;">
+            <h1 style="font-family: var(--font-heading); font-size: 2.2rem; margin-bottom: 1.5rem;">Team Member</h1>
+            <p style="opacity: 0.9; line-height: 1.6;">Add a professional profile for your staff. Customers trust salons
+                with verified and clear professional details.</p>
+        </div>
+
+        <!-- Right: Form -->
+        <div style="flex: 1.5; padding: 3rem;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <h4 style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 1.5rem;">General
+                    Info</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Full
+                            Name</label>
+                        {{ form.name }}
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Professional
+                            Role</label>
+                        {{ form.role }}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Contact
+                        Number</label>
+                    {{ form.phone }}
+                </div>
+
+                <h4
+                    style="border-left: 4px solid var(--secondary); padding-left: 10px; margin-bottom: 1.5rem; margin-top: 2rem;">
+                    Availability</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Shifts
+                            From</label>
+                        {{ form.available_from }}
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Shifts
+                            Until</label>
+                        {{ form.available_to }}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Working
+                        Days</label>
+                    <div class="days-grid">
+                        {% for choice_val, choice_label in form.fields.working_days_list.choices %}
+                        <div class="day-selector">
+                            <input type="checkbox" name="working_days_list" value="{{ choice_val }}"
+                                id="day_{{ choice_val }}" {% if choice_val in form.fields.working_days_list.initial
+                                %}checked{% endif %} style="display:none;">
+                            <label for="day_{{ choice_val }}">{{ choice_label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem;">Profile
+                        Photo</label>
+                    <div
+                        style="padding: 10px; border: 2px dashed var(--gray-light); border-radius: 12px; text-align: center;">
+                        {{ form.photo }}
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2.5rem;">
+                    {{ form.is_active }}
+                    <label style="font-weight: 600; font-size: 0.9rem;">Currently at work (Active)</label>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">Save
+                        Profile</button>
+                    <a href="{% url 'salon:staff_list' %}" class="btn btn-outline"
+                        style="flex: 1; justify-content: center;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

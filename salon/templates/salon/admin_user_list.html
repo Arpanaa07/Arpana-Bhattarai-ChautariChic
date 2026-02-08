@@ -1,0 +1,197 @@
+{% extends 'salon/base.html' %}
+
+{% block title %}Manage Users | Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --admin-bg: #f8fafc;
+        --admin-sidebar: #ffffff;
+        --admin-text: #1e293b;
+        --admin-muted: #64748b;
+        --admin-primary: #E6007E;
+    }
+
+    body {
+        background: var(--admin-bg);
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: calc(100vh - 80px);
+    }
+
+    .sidebar {
+        width: 260px;
+        background: var(--admin-sidebar);
+        border-right: 1px solid #e2e8f0;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 80px;
+        height: calc(100vh - 80px);
+        flex-shrink: 0;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-x: hidden;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: var(--admin-muted);
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link.active {
+        background: #fdf2f8;
+        color: var(--admin-primary);
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-table th {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.75rem;
+        color: var(--admin-muted);
+        text-transform: uppercase;
+        font-weight: 600;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .admin-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        background: #eff6ff;
+        color: #3b82f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav>
+            <a href="{% url 'salon:superadmin_dashboard' %}" class="sidebar-link"><i class="fas fa-columns"
+                    style="width: 20px;"></i> Dashboard</a>
+            <a href="{% url 'salon:admin_salon_list' %}" class="sidebar-link"><i class="fas fa-store"
+                    style="width: 20px;"></i> Salons</a>
+            <a href="{% url 'salon:admin_user_list' %}" class="sidebar-link active"><i class="fas fa-users"
+                    style="width: 20px;"></i> Users</a>
+            <a href="#" class="sidebar-link"><i class="fas fa-cog" style="width: 20px;"></i> Settings</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-family: var(--font-heading); font-size: 1.8rem; color: var(--admin-text);">All Users
+                </h1>
+                <p style="color: var(--admin-muted);">Manage customers and salon owners.</p>
+            </div>
+            <div
+                style="background: white; padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0; color: var(--admin-muted); font-size: 0.9rem;">
+                Total: <strong>{{ users.count }}</strong>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th>Last Login</th>
+                            <th style="text-align: right;">Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="user-avatar">
+                                        {{ user.first_name|first|default:"U" }}
+                                    </div>
+                                    <div style="font-weight: 600; color: #1e293b;">
+                                        {{ user.get_full_name|default:"Unknown User" }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span style="font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; 
+                                {% if user.user_type == 'salon_owner' %} background: #fdf2f8; color: var(--admin-primary);
+                                {% elif user.user_type == 'super_admin' %} background: #f0fdf4; color: #16a34a;
+                                {% else %} background: #eff6ff; color: #2563eb; {% endif %}">
+                                    {{ user.get_user_type_display|default:user.user_type }}
+                                </span>
+                            </td>
+                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            <td>{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</td>
+                            <td style="text-align: right;">
+                                {% if user.is_active %}
+                                <span style="color: #10b981;"><i class="fas fa-check-circle"></i></span>
+                                {% else %}
+                                <span style="color: #ef4444;"><i class="fas fa-times-circle"></i></span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="padding: 3rem; text-align: center; color: #94a3b8;">No users found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

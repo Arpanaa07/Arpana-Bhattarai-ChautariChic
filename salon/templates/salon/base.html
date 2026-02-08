@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ChautariChic{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #E6007E;
+            --primary-gradient: linear-gradient(135deg, #E6007E 0%, #7C3AED 100%);
+            --secondary: #7C3AED;
+            --dark: #1E1E1E;
+            --light: #FDF2F8;
+            /* Very light pinkish-white */
+            --white: #FFFFFF;
+            --gray: #6B7280;
+            --gray-light: #F3F4F6;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: var(--white);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .logo span {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px #E6007E;
+        }
+
+        .btn-outline {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .messages {
+            position: fixed;
+            top: 5rem;
+            right: 2rem;
+            z-index: 1100;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-md);
+            animation: slideIn 0.3s ease-out;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #10B981;
+        }
+
+        .alert-error,
+        .alert-danger {
+            background: #EF4444;
+        }
+
+        .alert-warning {
+            background: #F59E0B;
+        }
+
+        .alert-info {
+            background: #3B82F6;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 2rem 5%;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="logo">
+            <i class="fas fa-spa"></i>
+            <span>ChautariChic</span>
+        </a>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+            <span class="nav-user"
+                style="color: var(--primary); font-weight: 700; font-family: var(--font-heading); font-size: 1.1rem; margin-right: 1rem;">Hi,
+                {{ user.first_name }}</span>
+
+            <a href="{% url 'home' %}" class="nav-link">Home</a>
+            <a href="{% url 'salon:public_salon_list' %}" class="nav-link">Salons</a>
+            <a href="#" class="nav-link">Contact</a>
+
+            {% if user.user_type == 'customer' %}
+            <a href="{% url 'booking:my_bookings' %}" class="nav-link">My Bookings</a>
+            {% elif user.user_type == 'salon_owner' %}
+            <a href="{% url 'salon:dashboard' %}" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.9rem;">Dashboard</a>
+            {% elif user.user_type == 'super_admin' or user.is_superuser %}
+            <a href="{% url 'salon:superadmin_dashboard' %}" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.9rem;">Admin Panel</a>
+            {% endif %}
+
+            <a href="{% url 'logout' %}" class="btn btn-primary"
+                style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">Logout</a>
+
+            {% else %}
+            <a href="{% url 'home' %}" class="nav-link">Home</a>
+            <a href="{% url 'salon:public_salon_list' %}" class="nav-link">Salons</a>
+            <a href="#" class="nav-link">Contact</a>
+            <a href="{% url 'login_page' %}" class="nav-link">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="messages">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i
+                class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container"
+            style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; padding-bottom: 0;">
+            <div style="flex: 1; min-width: 250px;">
+                <a href="#" class="logo"
+                    style="color: var(--white); margin-bottom: 1rem; display: inline-flex; font-size: 1.2rem;">
+                    <i class="fas fa-spa"></i>
+                    <span>ChautariChic</span>
+                </a>
+                <p style="color: #9CA3AF; font-size: 0.85rem; max-width: 300px;">Premium home salon services delivered
+                    to your doorstep.
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 3rem; flex-wrap: wrap;">
+                <div>
+                    <h4 style="margin-bottom: 1rem; font-size: 1rem;">Quick Links</h4>
+                    <ul style="list-style: none; color: #9CA3AF; font-size: 0.85rem;">
+                        <li style="margin-bottom: 0.4rem;"><a href="#"
+                                style="color: inherit; text-decoration: none;">Browse Salons</a></li>
+                        <li style="margin-bottom: 0.4rem;"><a href="#"
+                                style="color: inherit; text-decoration: none;">Join as Partner</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 1rem; font-size: 1rem;">Connect</h4>
+                    <div style="display: flex; gap: 0.8rem; font-size: 1.1rem;">
+                        <a href="#" style="color: var(--white);"><i class="fab fa-facebook"></i></a>
+                        <a href="#" style="color: var(--white);"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="color: var(--white);"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container"
+            style="border-top: 1px solid #374151; margin-top: 1.5rem; padding-top: 1.5rem; text-align: center; color: #9CA3AF; font-size: 0.8rem;">
+            <p>&copy; 2026 ChautariChic. All rights reserved.</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

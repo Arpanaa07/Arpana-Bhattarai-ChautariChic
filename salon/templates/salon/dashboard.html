@@ -1,0 +1,398 @@
+﻿{% extends 'salon/base.html' %}
+
+{% block title %}Dashboard | {{ salon.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --sidebar-width: 260px;
+        --primary-soft: rgba(230, 0, 126, 0.08);
+    }
+
+    body {
+        background-color: #f8fafc;
+        /* Very light slate/gray */
+    }
+
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr;
+        min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        background: white;
+        border-right: 1px solid #e2e8f0;
+        padding: 2rem 1.5rem;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .salon-brand {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .salon-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        border: 4px solid white;
+    }
+
+    .salon-name {
+        font-family: var(--font-heading);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: #64748b;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+        background: #f1f5f9;
+        color: var(--dark);
+    }
+
+    .nav-link.active {
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .nav-link i {
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Main Content */
+    .main-content {
+        padding: 3rem 4rem;
+        max-width: 1400px;
+    }
+
+    .dashboard-header {
+        margin-bottom: 3rem;
+    }
+
+    .welcome-text {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .salon-description {
+        color: #64748b;
+        max-width: 600px;
+        line-height: 1.6;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        /* Fixed 3 columns for cleaner look */
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.25rem;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Quick Actions */
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .action-btn {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        color: var(--dark);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .action-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .action-btn i {
+        color: var(--primary);
+    }
+
+    /* Activity Feed (Clean Table style) */
+    .activity-section {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .booking-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .booking-item {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: grid;
+        grid-template-columns: 3rem 1fr 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .booking-item:last-child {
+        border-bottom: none;
+    }
+
+    .booking-avatar {
+        width: 40px;
+        height: 40px;
+        background: #f1f5f9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .booking-info h4 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 2px 0;
+        color: var(--dark);
+    }
+
+    .booking-info p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 99px;
+    }
+
+    .status-pending {
+        background: #fff7ed;
+        color: #c2410c;
+    }
+
+    .status-confirmed {
+        background: #f0fdf4;
+        color: #15803d;
+    }
+
+    .status-cancelled {
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .status-completed {
+        background: #f0f9ff;
+        color: #0369a1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="salon-brand">
+            {% if salon.logo %}
+            <img src="{{ salon.logo.url }}" alt="{{ salon.name }}" class="salon-logo">
+            {% else %}
+            <div class="salon-logo"
+                style="background: var(--light); display: flex; align-items: center; justify-content: center; color: var(--primary); margin: 0 auto 1rem auto; font-size: 1.5rem;">
+                <i class="fas fa-spa"></i>
+            </div>
+            {% endif %}
+            <h2 class="salon-name">{{ salon.name }}</h2>
+            {% if salon.is_approved %}
+            <div
+                style="font-size: 0.7rem; color: #10b981; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                ✓ Verified Partner</div>
+            {% else %}
+            <div
+                style="font-size: 0.7rem; color: #f59e0b; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Pending Verification</div>
+            {% endif %}
+        </div>
+
+        <nav>
+            <a href="{% url 'salon:dashboard' %}" class="nav-link active">
+                <i class="fas fa-home"></i> Overview
+            </a>
+            <a href="{% url 'salon:service_list' %}" class="nav-link">
+                <i class="fas fa-cut"></i> Services
+            </a>
+            <a href="{% url 'salon:category_list' %}" class="nav-link">
+                <i class="fas fa-tags"></i> Categories
+            </a>
+            <a href="{% url 'salon:staff_list' %}" class="nav-link">
+                <i class="fas fa-users"></i> Staff
+            </a>
+            <a href="{% url 'booking:salon_appointments' %}" class="nav-link">
+                <i class="fas fa-calendar-alt"></i> Bookings
+            </a>
+            <a href="{% url 'salon:edit' %}" class="nav-link">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="dashboard-header">
+            <h1 class="welcome-text">Welcome, {{ salon.name }}</h1>
+            <p class="salon-description">
+                {{ salon.description|default:"Your salon dashboard is ready."|truncatewords:25 }}
+            </p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value">{{ total_bookings_count|default:"0" }}</span>
+                <span class="stat-label">Total Bookings</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ active_services_count|default:"0" }}</span>
+                <span class="stat-label">Active Services</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ staff_count|default:"0" }}</span>
+                <span class="stat-label">Team Members</span>
+            </div>
+        </div>
+
+        <h3
+            style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
+            Quick Actions</h3>
+        <div class="actions-grid">
+            <a href="{% url 'salon:service_create' %}" class="action-btn">
+                <i class="fas fa-plus"></i> Add Service
+            </a>
+            <a href="{% url 'salon:staff_create' %}" class="action-btn">
+                <i class="fas fa-user-plus"></i> Add Staff
+            </a>
+            <a href="{% url 'booking:salon_appointments' %}" class="action-btn">
+                <i class="fas fa-calendar-check"></i> View Schedule
+            </a>
+        </div>
+
+        <div class="activity-section">
+            <div class="section-header">
+                <h3 class="section-title">Recent Activity</h3>
+                <a href="{% url 'booking:salon_appointments' %}"
+                    style="font-size: 0.85rem; color: var(--primary); font-weight: 600; text-decoration: none;">View
+                    All</a>
+            </div>
+            <ul class="booking-list">
+                {% for booking in recent_bookings %}
+                <li class="booking-item">
+                    <div class="booking-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="booking-info">
+                        <h4>{{ booking.customer.get_full_name|default:booking.customer.email|default:"Guest" }}</h4>
+                        <p>{{ booking.service.name }}</p>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.9rem; color: var(--dark);">{{ booking.date|date:"M d,
+                            Y" }}</div>
+                        <div style="font-size: 0.8rem; color: #64748b;">{{ booking.time }}</div>
+                    </div>
+                    <div>
+                        <span class="status-badge status-{{ booking.status|lower }}">{{ booking.status }}</span>
+                    </div>
+                </li>
+                {% empty %}
+                <li style="padding: 3rem; text-align: center; color: #64748b;">
+                    <i class="fas fa-calendar-times" style="font-size: 2rem; margin-bottom: 1rem; color: #cbd5e1;"></i>
+                    <p>No recent bookings found.</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
+</div>
+{% endblock %}
