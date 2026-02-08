@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -30,3 +31,8 @@ class CustomerProfile(models.Model):
     def __str__(self):
         return self.user.email
         
+=======
+from django.db import models
+
+# Create your models here.
+>>>>>>> 3b4d7d603705a8b1dab8e344cea9f1146bbc2988

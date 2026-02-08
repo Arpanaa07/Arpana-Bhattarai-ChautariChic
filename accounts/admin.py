@@ -1,4 +1,5 @@
 from django.contrib import admin
+<<<<<<< HEAD
 from django.contrib.auth.admin import UserAdmin
 from .models import User, SalonOwnerProfile, CustomerProfile
 
@@ -37,3 +38,7 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(SalonOwnerProfile)
 admin.site.register(CustomerProfile)
 
+=======
+
+# Register your models here.
+>>>>>>> 3b4d7d603705a8b1dab8e344cea9f1146bbc2988
